@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biomedical Voice Assistant</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      background: rgb(33, 33, 33);
+      font-family: 'Arial', sans-serif;
+      color: #fff;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      text-align: center;
+      width: 90%;
+      max-width: 500px;
+    }
+
+    .sound-wave {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
+      height: 60px;
+    }
+
+    .sound-wave span {
+      display: block;
+      width: 10px;
+      height: 10px;
+      border-radius: 8px;
+      background: orange;
+      transition: all 0.3s ease;
+    }
+
+    .speaking .sound-wave span:nth-child(1) {
+      animation: audio-wave 1.5s infinite ease-in-out;
+    }
+
+    .speaking .sound-wave span:nth-child(2) {
+      animation: audio-wave 1s infinite ease-in-out 0.2s;
+    }
+
+    .speaking .sound-wave span:nth-child(3) {
+      animation: audio-wave 1s infinite ease-in-out 0.4s;
+    }
+
+    .speaking .sound-wave span:nth-child(4) {
+      animation: audio-wave 1s infinite ease-in-out 0.6s;
+    }
+
+    .speaking .sound-wave span:nth-child(5) {
+      animation: audio-wave 1s infinite ease-in-out 0.8s;
+    }
+
+    @keyframes audio-wave {
+      0% {
+        height: 10px;
+        transform: translateY(0px);
+        background: #FF8E3A;
+      }
+      25% {
+        height: 40px;
+        transform: translateY(-5px);
+        background: #ED509E;
+      }
+      50% {
+        height: 20px;
+        transform: translateY(0px);
+        background: #9c73f8;
+      }
+      100% {
+        height: 10px;
+        transform: translateY(0px);
+        background: #FF8E3A;
+      }
+    }
+
+    .command-bubbles {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .bubble {
+      background-color: #007bff;
+      color: white;
+      padding: 10px 15px;
+      border-radius: 25px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    .bubble:hover {
+      background-color: #0056b3;
+      transform: scale(1.05);
+    }
+
+    .bubble:active {
+      transform: scale(0.95);
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Biomedical Voice Assistant</h1>
+    <div class="sound-wave" id="soundWave">
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+      <span></span>
+    </div>
+    <div class="command-bubbles">
+      <button class="bubble" data-command="what is a biomedical robot">What is a biomedical robot?</button>
+      <button class="bubble" data-command="what is your purpose">What is your purpose?</button>
+      <button class="bubble" data-command="what can you do">What can you do?</button>
+      <button class="bubble" data-command="tell me something interesting">Tell me something interesting</button>
+      <button class="bubble" data-command="how does the heart pump blood">How does the heart pump blood?</button>
+      <button class="bubble" data-command="what is the role of red blood cells">What is the role of red blood cells?</button>
+      <button class="bubble" data-command="what is blood pressure">What is blood pressure?</button>
+      <button class="bubble" data-command="how does oxygen travel in the blood">How does oxygen travel in the blood?</button>
+      <button class="bubble" data-command="what is the function of platelets">What is the function of platelets?</button>
+      <button class="bubble" data-command="what is the importance of the circulatory system">What is the importance of the circulatory system?</button>
+    </div>
+  </div>
+
+  <script>
+    // Select DOM elements
+    const soundWave = document.getElementById("soundWave");
+    const bubbles = document.querySelectorAll(".bubble");
+    const container = document.querySelector(".container");
+
+    // Speech Synthesis API
+    const synth = window.speechSynthesis;
+
+    // Predefined responses
+    const responses = {
+      "what is a biomedical robot": "A biomedical robot is a device designed to assist in healthcare tasks, such as surgery or patient care. It's an innovation that merges engineering and medicine.",
+      "what is your purpose": "My purpose is to simulate a biomedical assistant. I am here to help answer your questions and assist with biomedical tasks.",
+      "what can you do": "I can provide information, simulate tasks for healthcare assistance, and respond to your commands. Think of me as a friendly helper.",
+      "tell me something interesting": "Did you know that robotic surgery allows for minimally invasive procedures, leading to quicker recovery times and less pain for patients?",
+      "how does the heart pump blood": "The heart pumps blood by contracting its chambers. Oxygen-poor blood enters the right side, gets sent to the lungs to pick up oxygen, and then the oxygen-rich blood is pumped to the body by the left side of the heart.",
+      "what is the role of red blood cells": "Red blood cells transport oxygen from the lungs to the body's tissues and carry carbon dioxide back to the lungs for exhalation.",
+      "what is blood pressure": "Blood pressure is the force of blood pushing against the walls of the arteries as the heart pumps. It's essential for circulating blood throughout the body.",
+      "how does oxygen travel in the blood": "Oxygen binds to hemoglobin molecules in red blood cells, allowing it to be transported from the lungs to tissues throughout the body.",
+      "what is the function of platelets": "Platelets help in blood clotting, preventing excessive bleeding when you have an injury.",
+      "what is the importance of the circulatory system": "The circulatory system is crucial for transporting oxygen, nutrients, hormones, and waste products throughout the body, maintaining homeostasis.",
+    };
+
+    // Function to get a female voice
+    function getFemaleVoice() {
+      const voices = synth.getVoices();
+      return voices.find(voice => voice.name.includes("Female") || voice.name.includes("Samantha")) || voices[0];
+    }
+
+    // Function to speak a message
+    function speak(message) {
+      const utterance = new SpeechSynthesisUtterance(message);
+      utterance.voice = getFemaleVoice();
+      utterance.lang = "en-US";
+      utterance.pitch = 1.2;
+      utterance.rate = 0.9;
+
+      // Add "speaking" animation
+      utterance.onstart = () => {
+        container.classList.add("speaking");
+      };
+
+      utterance.onend = () => {
+        container.classList.remove("speaking");
+      };
+
+      synth.speak(utterance);
+    }
+
+    // Add event listeners to the bubbles
+    bubbles.forEach(bubble => {
+      bubble.addEventListener("click", () => {
+        const command = bubble.getAttribute("data-command");
+        const response = responses[command] || "I'm sorry, I don't have a response for that.";
+        speak(response);
+      });
+    });
+
+    // Ensure voices are loaded
+    window.speechSynthesis.onvoiceschanged = getFemaleVoice;
+  </script>
+</body>
+</html>
